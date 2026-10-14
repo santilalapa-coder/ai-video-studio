@@ -5,31 +5,143 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Video Studio</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:#fff;padding:20px}
-main{max-width:700px;margin:auto}
-section{background:#141b31;padding:20px;margin:18px 0;border-radius:14px}
-textarea,input{box-sizing:border-box;width:100%;padding:12px;margin:10px 0;background:#0d1428;color:white;border:1px solid #667;border-radius:8px}
-textarea{min-height:120px}
-button{padding:12px;border:0;border-radius:8px;background:#8175ff;color:white;font-weight:bold}
-p{line-height:1.6;color:#c5cce0}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:white}
+header{text-align:center;padding:25px 12px;background:#151d36}
+header h1{color:#61e8ff;margin:0 0 8px}
+header p{margin:0;color:#d1d8ee}
+main{max-width:850px;margin:auto;padding:16px}
+.card{background:#151d36;padding:18px;border-radius:14px;margin:15px 0}
+h2{color:#61e8ff;font-size:21px}
+label{display:block;margin:14px 0 7px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #475475;border-radius:8px;background:#0b1020;color:white;font-size:16px}
+textarea{min-height:120px;resize:vertical}
+button{width:100%;padding:13px;border:0;border-radius:9px;background:#5865f2;color:white;font-size:16px;font-weight:bold;margin-top:13px}
+button:active{opacity:.8}
+.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#080d19;padding:12px;border-radius:8px;min-height:50px}
+.note{color:#c2cbe0;font-size:14px;line-height:1.6}
+footer{text-align:center;padding:25px;color:#aab5d0}
 </style>
 </head>
 <body>
-<main>
+<header>
 <h1>🎬 AI Video Studio</h1>
-<p>अपनी कहानी और तस्वीरों से वीडियो बनाने की शुरुआत करें।</p>
-<section>
-<h2>📝 कहानी से वीडियो</h2>
-<textarea id="story" placeholder="अपनी कहानी हिंदी में लिखें..."></textarea>
-<button onclick="document.getElementById('msg').textContent=document.getElementById('story').value.trim()?'कहानी तैयार है। AI वीडियो सेवा अभी जोड़नी बाकी है।':'पहले कहानी लिखें।'">कहानी तैयार करें</button>
+<p>अपनी कहानी और फोटो से वीडियो बनाने की तैयारी करें</p>
+</header>
+
+<main>
+<section class="card">
+<h2>📖 कहानी से AI वीडियो</h2>
+<label for="story">अपनी कहानी लिखें</label>
+<textarea id="story" placeholder="यहाँ अपनी कहानी हिंदी में लिखें..."></textarea>
+
+<label for="style">वीडियो का प्रकार</label>
+<select id="style">
+<option>Realistic Cinematic</option>
+<option>3D Cartoon</option>
+<option>Comedy Story</option>
+<option>Reverse World उल्टी दुनिया</option>
+<option>Adventure</option>
+</select>
+
+<label for="duration">वीडियो की अवधि</label>
+<select id="duration">
+<option value="30">30 सेकंड</option>
+<option value="60">1 मिनट</option>
+<option value="120" selected>2 मिनट</option>
+<option value="180">3 मिनट</option>
+<option value="300">5 मिनट</option>
+</select>
+
+<label for="ratio">वीडियो का आकार</label>
+<select id="ratio">
+<option value="16:9">16:9 YouTube</option>
+<option value="9:16">9:16 Instagram Reels</option>
+</select>
+
+<button onclick="makeStory()">✨ वीडियो प्रॉम्प्ट बनाएँ</button>
+<div id="storyResult" class="result">आपका प्रॉम्प्ट यहाँ दिखाई देगा।</div>
+<button onclick="copyText('storyResult')">📋 प्रॉम्प्ट कॉपी करें</button>
 </section>
-<section>
-<h2>🖼️ तस्वीर से वीडियो</h2>
-<input type="file" accept="image/*" id="photo">
-<button onclick="document.getElementById('msg').textContent=document.getElementById('photo').files.length?'तस्वीर चुनी गई। AI वीडियो सेवा अभी जोड़नी बाकी है।':'पहले तस्वीर चुनें।'">तस्वीर जाँचें</button>
+
+<section class="card">
+<h2>🖼️ फोटो से वीडियो</h2>
+<p class="note">अपनी फोटो चुनें। यह पेज फोटो का प्रीव्यू दिखाता है और फोटो-वीडियो बनाने के लिए प्रॉम्प्ट तैयार करता है। वास्तविक वीडियो बनाने के लिए AI वीडियो सेवा की आवश्यकता होगी।</p>
+
+<label for="photo">अपनी फोटो चुनें</label>
+<input id="photo" type="file" accept="image/*" onchange="previewPhoto()">
+<img id="preview" alt="फोटो प्रीव्यू" style="display:none;width:100%;max-height:350px;object-fit:contain;margin-top:12px;border-radius:10px">
+
+<label for="dialogue">वीडियो में क्या बोलना है?</label>
+<textarea id="dialogue" placeholder="नमस्ते दोस्तों! मेरे चैनल में आपका स्वागत है..."></textarea>
+
+<label for="motion">वीडियो में गतिविधि</label>
+<select id="motion">
+<option>बात करते हुए, होंठ आवाज़ से मिलें</option>
+<option>कैमरे की ओर चलते हुए</option>
+<option>मुस्कुराते हुए हाथ हिलाना</option>
+<option>सिनेमैटिक कैमरा मूवमेंट</option>
+</select>
+
+<button onclick="makePhotoPrompt()">🎥 फोटो वीडियो प्रॉम्प्ट बनाएँ</button>
+<div id="photoResult" class="result">आपका फोटो-वीडियो प्रॉम्प्ट यहाँ दिखाई देगा।</div>
+<button onclick="copyText('photoResult')">📋 प्रॉम्प्ट कॉपी करें</button>
 </section>
-<p id="msg"></p>
-<p>नोट: असली AI वीडियो बनाने के लिए AI वीडियो सेवा और सुरक्षित सर्वर जोड़ना आवश्यक है।</p>
+
+<section class="card">
+<h2>🌐 अगला कदम</h2>
+<p class="note">यह वेबसाइट अभी प्रॉम्प्ट बनाने वाला शुरुआती संस्करण है। यह अपने आप AI वीडियो या बोलती हुई फोटो नहीं बनाती। उसके लिए अलग वीडियो जनरेटर और, यदि ज़रूरी हो, उसकी API जोड़नी होगी।</p>
+<button onclick="window.open('https://www.google.com/search?q=free+AI+image+to+video+generator','_blank')">AI वीडियो टूल खोजें</button>
+</section>
 </main>
+
+<footer>AI Video Studio • आपका क्रिएटिव साथी</footer>
+
+<script>
+function makeStory(){
+const story=document.getElementById('story').value.trim();
+if(!story){alert('पहले अपनी कहानी लिखें।');return;}
+const style=document.getElementById('style').value;
+const duration=Number(document.getElementById('duration').value);
+const ratio=document.getElementById('ratio').value;
+const scenes=Math.ceil(duration/8);
+const prompt=`Create a ${style} AI video based on this Hindi story:\n${story}\n\nInstructions:\n- Output aspect ratio: ${ratio}\n- Target total duration: ${duration} seconds\n- Divide the story into ${scenes} sequential clips of about 8 seconds each, with a shorter final clip if needed.\n- Keep character appearance, clothing, locations and voices consistent.\n- Use natural Hindi dialogue and accurate lip-sync when dialogue is included.\n- Use cinematic camera movement, clear visuals, suitable lighting and sound.\n- Preserve the story order and create a satisfying ending.\n- Generate each scene separately if the video tool has a short clip limit.\n\nSCENE PLAN:\n${Array.from({length:scenes},(_,i)=>`Scene ${i+1} (${i*8}-${Math.min((i+1)*8,duration)} seconds): Show the next appropriate moment from the story in chronological order. Story context: ${story}`).join('\n\n')}`;
+document.getElementById('storyResult').textContent=prompt;
+}
+function previewPhoto(){
+const file=document.getElementById('photo').files[0];
+const img=document.getElementById('preview');
+if(!file){img.style.display='none';return;}
+if(!file.type.startsWith('image/')){alert('कृपया फोटो चुनें।');return;}
+img.src=URL.createObjectURL(file);
+img.style.display='block';
+}
+function makePhotoPrompt(){
+const dialogue=document.getElementById('dialogue').value.trim();
+const motion=document.getElementById('motion').value;
+if(!document.getElementById('photo').files.length){
+alert('पहले अपनी फोटो चुनें।');
+return;
+}
+const prompt=`Animate the uploaded reference photo into a natural-looking video. Preserve the person's identity and facial features. Activity: ${motion}. Spoken Hindi dialogue: "${dialogue||'नमस्ते दोस्तों!'}". Use natural facial expressions, realistic movement, clear Hindi voice and accurate lip sync. Keep the original appearance consistent. Avoid face distortion and extra fingers.`;
+document.getElementById('photoResult').textContent=prompt;
+}
+function copyText(id){
+const text=document.getElementById(id).textContent;
+if(!text||text.includes('यहाँ दिखाई देगा')){alert('पहले प्रॉम्प्ट बनाएँ।');return;}
+if(navigator.clipboard&&navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(()=>alert('प्रॉम्प्ट कॉपी हो गया।')).catch(()=>fallbackCopy(text));
+}else{fallbackCopy(text);}
+}
+function fallbackCopy(text){
+const area=document.createElement('textarea');
+area.value=text;
+document.body.appendChild(area);
+area.select();
+try{document.execCommand('copy');alert('प्रॉम्प्ट कॉपी हो गया।');}
+catch(e){alert('टेक्स्ट को दबाकर कॉपी करें।');}
+area.remove();
+}
+</script>
 </body>
 </html>
