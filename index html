@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Video Studio</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:#fff;padding:20px}
+main{max-width:700px;margin:auto}
+section{background:#141b31;padding:20px;margin:18px 0;border-radius:14px}
+textarea,input{box-sizing:border-box;width:100%;padding:12px;margin:10px 0;background:#0d1428;color:white;border:1px solid #667;border-radius:8px}
+textarea{min-height:120px}
+button{padding:12px;border:0;border-radius:8px;background:#8175ff;color:white;font-weight:bold}
+p{line-height:1.6;color:#c5cce0}
+</style>
+</head>
+<body>
+<main>
+<h1>🎬 AI Video Studio</h1>
+<p>अपनी कहानी और तस्वीरों से वीडियो बनाने की शुरुआत करें।</p>
+<section>
+<h2>📝 कहानी से वीडियो</h2>
+<textarea id="story" placeholder="अपनी कहानी हिंदी में लिखें..."></textarea>
+<button onclick="document.getElementById('msg').textContent=document.getElementById('story').value.trim()?'कहानी तैयार है। AI वीडियो सेवा अभी जोड़नी बाकी है।':'पहले कहानी लिखें।'">कहानी तैयार करें</button>
+</section>
+<section>
+<h2>🖼️ तस्वीर से वीडियो</h2>
+<input type="file" accept="image/*" id="photo">
+<button onclick="document.getElementById('msg').textContent=document.getElementById('photo').files.length?'तस्वीर चुनी गई। AI वीडियो सेवा अभी जोड़नी बाकी है।':'पहले तस्वीर चुनें।'">तस्वीर जाँचें</button>
+</section>
+<p id="msg"></p>
+<p>नोट: असली AI वीडियो बनाने के लिए AI वीडियो सेवा और सुरक्षित सर्वर जोड़ना आवश्यक है।</p>
+</main>
+</body>
+</html>
